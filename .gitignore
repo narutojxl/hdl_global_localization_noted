@@ -1,7 +1,5 @@
 
-
-
 .vscode/
-.travis.yml/
-.clang-format/
+.travis.yml
+.clang-format
 build/

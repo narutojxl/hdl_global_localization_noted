@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(hdl_global_localization)
 
-option(ENABLE_TEASER "Build with Teaser++" OFF)
+option(ENABLE_TEASER "Build with Teaser++" ON)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -36,7 +36,25 @@ if(ENABLE_TEASER)
   )
 
   add_definitions(-DTEASER_ENABLED)
+
 endif()
+
+
+#jxl add 
+# set(teaserpp_DIR   /home/jxl/third_softwares/TEASER-plusplus/cmake/)
+# find_package(teaserpp  REQUIRED)
+# include_directories( ${teaserpp_INCLUDE_DIRS} )
+# add_definitions(-DTEASER_ENABLED) 
+# add_definitions(-DTEASER_ON)
+
+# set(TEASER_LIBRARIES
+#     teaserpp::teaser_registration 
+#     teaserpp::teaser_io
+#     teaserpp::teaser_features
+# )
+
+
+
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -93,33 +111,34 @@ target_link_libraries(hdl_global_localization
   ${OpenCV_LIBS}
 )
 
-if(TEASER_LIBRARIES)
+
+
   add_library(hdl_global_localization_teaser
     src/hdl_global_localization/engines/global_localization_fpfh_teaser.cpp
   )
-  add_dependencies(hdl_global_localization_teaser teaser)
+#   add_dependencies(hdl_global_localization_teaser    )   #teaser
   target_link_libraries(hdl_global_localization_teaser
     ${TEASER_LIBRARIES}
   )
 
-  add_dependencies(hdl_global_localization teaser)
-  add_dependencies(hdl_global_localization hdl_global_localization_teaser)
+#   add_dependencies(hdl_global_localization      ) #teaser
+  add_dependencies(hdl_global_localization      hdl_global_localization_teaser)
   target_link_libraries(hdl_global_localization
     hdl_global_localization_teaser
   )
-endif()
 
 
-add_executable(hdl_global_localization_node src/hdl_global_localization_node.cpp)
-add_dependencies(hdl_global_localization_node hdl_global_localization ${PROJECT_NAME}_gencpp)
+
+add_executable(hdl_global_localization_node     src/hdl_global_localization_node.cpp)
+add_dependencies(hdl_global_localization_node    hdl_global_localization    ${PROJECT_NAME}_gencpp)
 target_link_libraries(hdl_global_localization_node
   hdl_global_localization
   ${catkin_LIBRARIES}
 )
 
 
-add_executable(hdl_global_localization_test src/hdl_global_localization_test.cpp)
-add_dependencies(hdl_global_localization_test ${PROJECT_NAME}_gencpp)
+add_executable(hdl_global_localization_test       src/hdl_global_localization_test.cpp)
+add_dependencies(hdl_global_localization_test    ${PROJECT_NAME}_gencpp)
 target_link_libraries(hdl_global_localization_test
   ${catkin_LIBRARIES}
 )
