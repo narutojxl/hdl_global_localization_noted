@@ -8,7 +8,7 @@
 #include <pcl/filters/approximate_voxel_grid.h>
 
 #include <pcl_ros/point_cloud.h>
-#include <hdl_global_localization/SetGlobalMap.h>
+#include <hdl_global_localization/SetGlobalMap.h>   //3个services
 #include <hdl_global_localization/QueryGlobalLocalization.h>
 #include <hdl_global_localization/SetGlobalLocalizationEngine.h>
 

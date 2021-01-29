@@ -35,7 +35,7 @@ if(ENABLE_TEASER)
     ${CATKIN_DEVEL_PREFIX}/lib/libteaser_features.so
   )
 
-  add_definitions(-DTEASER_ENABLED)
+  add_definitions(-DTEASER_ENABLED) #this macro used in code hdl_global_localization_node.cpp
 
 endif()
 
