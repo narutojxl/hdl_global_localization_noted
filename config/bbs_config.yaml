@@ -1,4 +1,4 @@
-bbs/max_range: 15.0
+bbs/max_range: 15.0   #最大搜索距离
 
 # transformation search range
 bbs/min_tx: -50.0
@@ -6,20 +6,25 @@ bbs/max_tx: 50.0
 bbs/min_ty: -50.0
 bbs/max_ty: 50.0
 bbs/min_theta: -3.15
-bbs/max_theta: 3.15
+bbs/max_theta: 3.15   
+#query scan的sensor frame在map的范围(x,y,theta)。确定搜索窗口位置和init candidates。
+
 
 # global map config
+
 # slice height range (map coordinate)
 bbs/map_min_z: 2.0
-bbs/map_max_z: 2.4
+bbs/map_max_z: 2.4    #存储global map中点z值在[min, max]之间的points的vector<Eigen::Vector2f(x,y)>
+
 # 2D map params
 bbs/map_width: 512
-bbs/map_height: 1024
-bbs/map_resolution: 0.5
-bbs/max_points_per_cell: 5
+bbs/map_height: 1024       #最底层金字塔grid_map的行列
+bbs/map_resolution: 0.5    #最底层金字塔grid_map的分辨率。最底层的grid_map分辨率最细，依次往上分辨率降低为下面层的2倍，大小也变为下面层的1/2
+bbs/max_points_per_cell: 5 #一个grid_map的对应像素位置，点的个数不能超过5. grid_map的像素值统一归一化，对应位置元素个数超过max_points_per_cell时，强制为1
+
 # precomp map pyramid
-bbs/map_pyramid_level: 6
+bbs/map_pyramid_level: 6  #金字塔层数
 
 # scan slice height range (sensor coordinate)
-bbs/scan_min_z: -0.2
+bbs/scan_min_z: -0.2   #for query scan, 在laser坐标系下[min_z, max_z]
 bbs/scan_max_z: 0.2

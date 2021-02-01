@@ -10,7 +10,7 @@ namespace hdl_global_localization {
 
 GlobalLocalizationBBS::GlobalLocalizationBBS(ros::NodeHandle& private_nh) : private_nh(private_nh) {
   gridmap_pub = private_nh.advertise<nav_msgs::OccupancyGrid>("bbs/gridmap", 1, true);
-  map_slice_pub = private_nh.advertise<sensor_msgs::PointCloud2>("bbs/map_slice", 1, true);
+  map_slice_pub = private_nh.advertise<sensor_msgs::PointCloud2>("bbs/map_slice", 1, true); //发布对global map进行z轴方向上slice后的points(x,y,0)
   scan_slice_pub = private_nh.advertise<sensor_msgs::PointCloud2>("bbs/scan_slice", 1, false);
 }
 
@@ -29,7 +29,7 @@ void GlobalLocalizationBBS::set_global_map(pcl::PointCloud<pcl::PointXYZ>::Const
 
   double map_min_z = private_nh.param<double>("bbs/map_min_z", 2.0);
   double map_max_z = private_nh.param<double>("bbs/map_max_z", 2.4);
-  auto map_2d = slice(*cloud, map_min_z, map_max_z);
+  auto map_2d = slice(*cloud, map_min_z, map_max_z); //存储global map中点z值在[min, max]之间的points的vector<Eigen::Vector2f(x,y)>
   ROS_INFO_STREAM("Set Map " << map_2d.size() << " points");
 
   if (map_2d.size() < 128) {
@@ -44,7 +44,7 @@ void GlobalLocalizationBBS::set_global_map(pcl::PointCloud<pcl::PointXYZ>::Const
   int max_points_per_cell = private_nh.param<int>("bbs/max_points_per_cell", 5);
   bbs->set_map(map_2d, map_resolution, map_width, map_height, map_pyramid_level, max_points_per_cell);
 
-  auto map_3d = unslice(map_2d);
+  auto map_3d = unslice(map_2d); //slice global map points(x,y,0)
   map_3d->header.frame_id = "map";
   map_slice_pub.publish(map_3d);
   gridmap_pub.publish(bbs->gridmap()->to_rosmsg());
@@ -77,7 +77,7 @@ GlobalLocalizationResults GlobalLocalizationBBS::query(pcl::PointCloud<pcl::Poin
   }
 
   Eigen::Isometry3f trans_3d = Eigen::Isometry3f::Identity();
-  trans_3d.linear().block<2, 2>(0, 0) = trans_2d->linear();
+  trans_3d.linear().block<2, 2>(0, 0) = trans_2d->linear(); //rotation
   trans_3d.translation().head<2>() = trans_2d->translation();
 
   results.resize(1);

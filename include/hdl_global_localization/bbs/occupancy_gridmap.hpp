@@ -30,15 +30,15 @@ public:
 
   void insert_points(const std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f>>& points, int min_points_per_grid) {
     for (const auto& pt : points) {
-      auto loc = grid_loc(pt);
-      if (in_map(loc)) {
-        value(loc) += 1;
+      auto loc = grid_loc(pt); //计算map下每个point在grid_map下的行列坐标
+      if (in_map(loc)) { //在grid_map内
+        value(loc) += 1; //每当一个map point落入grid_map某个位置，对应位置元素加1
       }
     }
 
-    values /= min_points_per_grid;
+    values /= min_points_per_grid; //注意: 对每个grid_map元素归一化
     for (auto& x : values) {
-      x = std::min(x, 1.0f);
+      x = std::min(x, 1.0f); //落入对应位置点的个数超过max_points_per_cell时，强制为1
     }
   }
 
@@ -87,7 +87,7 @@ public:
 
     msg->info.origin.position.x = -resolution * values.cols / 2;
     msg->info.origin.position.y = -resolution * values.rows / 2;
-    msg->info.origin.position.z = 0.0;
+    msg->info.origin.position.z = 0.0; //map坐标系(grid_map中心位置，x右，y前)的左下角
 
     return msg;
   }
@@ -98,10 +98,12 @@ private:
     bool right_bound = (pix.array() < Eigen::Array2i(values.cols, values.rows)).all();
     return left_bound && right_bound;
   }
-
+  
+  //cv::Mat的行列分别对应grid_map的(y, x)
   float value(const Eigen::Vector2i& loc) const { return values.at<float>(loc.y(), loc.x()); }
   float& value(const Eigen::Vector2i& loc) { return values.at<float>(loc.y(), loc.x()); }
-
+  
+  //计算在grid_map中的行列坐标，grid_map在map坐标系的左下角。x轴，y轴分别与map坐标系的x轴，y轴对齐。
   Eigen::Vector2i grid_loc(const Eigen::Vector2f& pt) const {
     Eigen::Vector2i loc = (pt / resolution).array().floor().cast<int>();
     Eigen::Vector2i offset = Eigen::Vector2i(values.cols / 2, values.rows / 2);
@@ -110,7 +112,7 @@ private:
 
 private:
   double resolution;
-  cv::Mat1f values;
+  cv::Mat1f values;  //落入对应位置点的个数超过max_points_per_cell时，强制为1，元素值的大小在[0, 1]
 };
 
 }  // namespace hdl_global_localization

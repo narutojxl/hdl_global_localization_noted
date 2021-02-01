@@ -83,7 +83,7 @@ private:
 private:
   BBSParams params;
 
-  double theta_resolution;
+  double theta_resolution; //对每层grid_map都是一样的
   std::vector<std::shared_ptr<OccupancyGridMap>> gridmap_pyramid;
 };
 
