@@ -41,7 +41,7 @@ GlobalLocalizationResults GlobalLocalizationEngineFPFH_Teaser::query(pcl::PointC
   }
 
   ROS_INFO_STREAM("Find Correspondences");
-  teaser::Matcher matcher;
+  teaser::Matcher matcher; //TODO(jxl): 学习teaser的使用
   auto correspondences = matcher.calculateCorrespondences(
     source_cloud,
     target_cloud,
