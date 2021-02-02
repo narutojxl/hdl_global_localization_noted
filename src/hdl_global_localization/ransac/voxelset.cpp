@@ -18,7 +18,7 @@ size_t Vector3iHash::operator()(const Eigen::Vector3i& x) const {
 
 VoxelSet::VoxelSet(double max_correspondence_distance) : resolution(max_correspondence_distance) {}
 
-void VoxelSet::set_cloud(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud) {
+void VoxelSet::set_cloud(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud) {//global map
   voxels.clear();
 
   std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>> offsets;

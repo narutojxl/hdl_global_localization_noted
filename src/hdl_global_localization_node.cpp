@@ -95,7 +95,7 @@ private:
 
     auto results = engine->query(cloud, req.max_num_candidates);
 
-    res.inlier_fractions.resize(results.results.size());
+    res.inlier_fractions.resize(results.results.size()); //bbs产生一个transform; fpfh_ransac产生多个
     res.errors.resize(results.results.size());
     res.poses.resize(results.results.size());
 

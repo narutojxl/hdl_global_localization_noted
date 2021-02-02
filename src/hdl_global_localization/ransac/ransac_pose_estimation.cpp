@@ -92,12 +92,13 @@ GlobalLocalizationResults RansacPoseEstimation<FeatureT>::estimate() {
   correspondence_rejection.setSimilarityThreshold(private_nh.param<double>("ransac/similarity_threshold", 0.5));
 
   ROS_INFO_STREAM("RANSAC : Precompute Nearest Features");
-  std::vector<std::vector<int>> similar_features(source->size());
+  std::vector<std::vector<int>> similar_features(source->size()); //similar_features[i]: query scan中第i个point的correspondances index
+
 #pragma omp parallel for
   for (int i = 0; i < source->size(); i++) {
     std::vector<float> sq_dists;
     feature_tree->nearestKSearch(source_features->at(i), private_nh.param<int>("ransac/correspondence_randomness", 2), similar_features[i], sq_dists);
-  }
+  } //在global map kdtree中找query scan的每个point最近的points
 
   std::vector<std::mt19937> mts(omp_get_max_threads());
   for (int i = 0; i < mts.size(); i++) {
@@ -114,7 +115,7 @@ GlobalLocalizationResults RansacPoseEstimation<FeatureT>::estimate() {
 #pragma omp parallel for
   for (int i = 0; i < results.size(); i++) {
     if (matching_count > matching_budget) {
-      continue;
+      continue; //应该是break
     }
     iterations++;
 
@@ -122,6 +123,7 @@ GlobalLocalizationResults RansacPoseEstimation<FeatureT>::estimate() {
     std::vector<int> samples;
     std::vector<int> correspondences;
     select_samples(mt, similar_features, samples, correspondences);
+    //随机挑选出3个points，以及每个point对应的correspondances中的一个点的index
 
     if (!correspondence_rejection.thresholdPolygon(samples, correspondences)) {
       continue;
@@ -147,18 +149,19 @@ GlobalLocalizationResults RansacPoseEstimation<FeatureT>::estimate() {
   return GlobalLocalizationResults(results);
 }
 
+
 template <typename FeatureT>
 void RansacPoseEstimation<FeatureT>::select_samples(
   std::mt19937& mt,
   const std::vector<std::vector<int>>& similar_features,
   std::vector<int>& samples,
   std::vector<int>& correspondences) const {
-  samples.resize(3);
+  samples.resize(3); //samples中每个元素代表点的index，随机挑选出来的，但没有重复。3d-icp最少只需要3个点就能通过svd得到闭式解
   for (int i = 0; i < samples.size(); i++) {
-    samples[i] = std::uniform_int_distribution<>(0, similar_features.size() - 1)(mt);
+    samples[i] = std::uniform_int_distribution<>(0, similar_features.size() - 1)(mt); //均匀挑选
 
     for (int j = 0; j < i; j++) {
-      if (samples[j] == samples[i]) {
+      if (samples[j] == samples[i]) {//重复
         i--;
       }
     }
@@ -166,7 +169,7 @@ void RansacPoseEstimation<FeatureT>::select_samples(
 
   correspondences.resize(3);
   for (int i = 0; i < samples.size(); i++) {
-    if (similar_features[samples[i]].size() == 1) {
+    if (similar_features[samples[i]].size() == 1) {//该点在global map中只有一个correspondance
       correspondences[i] = similar_features[samples[i]][0];
     } else {
       int idx = std::uniform_int_distribution<>(0, similar_features[samples[i]].size() - 1)(mt);

@@ -20,7 +20,7 @@ public:
     max_correspondence_distance_sq = max_correspondence_distance * max_correspondence_distance;
 
     voxels.reset(new VoxelSet(max_correspondence_distance));
-    voxels->set_cloud(cloud);
+    voxels->set_cloud(cloud); //global map， 计算global map的voxels
   }
 
   virtual double calc_matching_error(const pcl::PointCloud<pcl::PointXYZ>& cloud, const Eigen::Matrix4f& transformation, double* inlier_fraction) override {
@@ -30,7 +30,7 @@ public:
     pcl::PointCloud<pcl::PointXYZ> transformed;
     pcl::transformPointCloud(cloud, transformed, transformation);
 
-    return voxels->matching_error(transformed, inlier_fraction);
+    return voxels->matching_error(transformed, inlier_fraction); //对计算的transform进行评价，计算inliers比例
   }
 
 private:

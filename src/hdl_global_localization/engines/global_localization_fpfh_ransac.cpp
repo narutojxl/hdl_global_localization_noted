@@ -44,12 +44,12 @@ void GlobalLocalizationEngineFPFH_RANSAC::set_global_map(pcl::PointCloud<pcl::Po
 }
 
 GlobalLocalizationResults GlobalLocalizationEngineFPFH_RANSAC::query(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud, int max_num_candidates) {
-  pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr cloud_features = extract_fpfh(cloud);
+  pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr cloud_features = extract_fpfh(cloud); //query scan
 
   ransac->set_source(cloud, cloud_features);
   auto results = ransac->estimate();
 
-  return results.sort(max_num_candidates);
+  return results.sort(max_num_candidates); //按照inlier比例从高到低，或者按照误差从小到大，挑选出max_num_candidates个transforms
 }
 
 }  // namespace hdl_global_localization

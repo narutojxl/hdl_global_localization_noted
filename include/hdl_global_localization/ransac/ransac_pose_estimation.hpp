@@ -73,13 +73,13 @@ private:
 private:
   ros::NodeHandle& private_nh;
 
-  pcl::PointCloud<pcl::PointXYZ>::ConstPtr target;
-  typename pcl::PointCloud<FeatureT>::ConstPtr target_features;
+  pcl::PointCloud<pcl::PointXYZ>::ConstPtr target; //global map 
+  typename pcl::PointCloud<FeatureT>::ConstPtr target_features; //global map fpfh
 
-  pcl::PointCloud<pcl::PointXYZ>::ConstPtr source;
-  typename pcl::PointCloud<FeatureT>::ConstPtr source_features;
+  pcl::PointCloud<pcl::PointXYZ>::ConstPtr source; //query scan 
+  typename pcl::PointCloud<FeatureT>::ConstPtr source_features; //query scan fpfh
 
-  typename pcl::KdTreeFLANN<FeatureT>::Ptr feature_tree;
+  typename pcl::KdTreeFLANN<FeatureT>::Ptr feature_tree; //global map fpfh构成的kd tree
   std::unique_ptr<MatchingCostEvaluater> evaluater;
 };
 
